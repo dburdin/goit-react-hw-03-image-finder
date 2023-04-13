@@ -14,6 +14,7 @@ export class RootGallery extends Component {
     searchQuerry: '',
     page: 1,
     images: [],
+    totalHits: 0,
     largeImageURL: '',
     showModal: false,
     isLoader: false,
@@ -30,17 +31,23 @@ export class RootGallery extends Component {
   async fetchImages() {
     const { searchQuerry, page } = this.state;
 
-    this.setState({ isLoader: true });
+    this.setState({ isLoader: true, error: '' });
 
     try {
-      const { hits } = await FetchData(searchQuerry, page);
+      const { hits, totalHits } = await FetchData(searchQuerry, page);
 
-      if (!hits.length) {
+      if (!totalHits) {
         return alert('No images found');
       }
+      const images = hits.map(({ id, webformatURL, largeImageURL }) => ({
+        id,
+        webformatURL,
+        largeImageURL,
+      }));
       this.setState(prev => {
         return {
-          images: [...prev.images, ...hits],
+          images: [...prev.images, ...images],
+          totalHits,
         };
       });
     } catch (error) {
@@ -52,28 +59,25 @@ export class RootGallery extends Component {
     }
   }
 
-  toggleModal = () => {
-    this.setState(({ showModal }) => ({
-      showModal: !showModal,
-    }));
-  };
-
   loadMore = () => {
     this.setState(prev => ({
       page: prev.page + 1,
     }));
   };
-  handleClickOnImage = event => {
-    this.toggleModal();
-    this.setState({ largeImageURL: event.target.dataset.url });
+
+  toggleModal = (largeImageURL = '') => {
+    const { showModal } = this.state;
+
+    this.setState({ showModal: !showModal, largeImageURL });
   };
 
   handleSubmit = querry => {
-    this.setState({ searchQuerry: querry, page: 1, images: [] });
+    this.setState({ searchQuerry: querry, page: 1, images: [], totalHits: 0 });
   };
 
   render() {
-    const { images, isLoader, showModal, largeImageURL } = this.state;
+    const { images, totalHits, isLoader, showModal, largeImageURL, error } =
+      this.state;
 
     return (
       <>
@@ -82,7 +86,7 @@ export class RootGallery extends Component {
         <Wrapper>
           {images.length !== 0 && (
             <ImageGallery
-              handleClickOnImage={this.handleClickOnImage}
+              handleClickOnImage={this.toggleModal}
               images={images}
             />
           )}
@@ -95,12 +99,10 @@ export class RootGallery extends Component {
               toggleModal={this.toggleModal}
             />
           )}
-
-          {images.length !== 0 && (
+          {error && <div>{error}</div>}
+          {totalHits !== images.length && !isLoader && (
             <Button title="LoadMore" handleLoadMoreBtn={this.loadMore} />
           )}
-
-          {false && <Loader />}
         </Wrapper>
       </>
     );

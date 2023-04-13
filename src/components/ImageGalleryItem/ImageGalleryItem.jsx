@@ -7,8 +7,7 @@ export const ImageGalleryItem = ({ image, handleClickOnImage }) => {
     <GalleryItem>
       <GalleryItemImage
         src={image.webformatURL}
-        onClick={handleClickOnImage}
-        data-url={image.largeImageURL}
+        onClick={() => handleClickOnImage(image.largeImageURL)}
         alt="#"
       />
     </GalleryItem>
