@@ -66,9 +66,9 @@ export class RootGallery extends Component {
   };
 
   toggleModal = (largeImageURL = '') => {
-    const { showModal } = this.state;
-
-    this.setState({ showModal: !showModal, largeImageURL });
+    this.setState(({ showModal }) => {
+      return { showModal: !showModal, largeImageURL };
+    });
   };
 
   handleSubmit = querry => {
