@@ -78,29 +78,27 @@ export class RootGallery extends Component {
     return (
       <>
         <SearchBar handleSubmit={this.handleSubmit} />
-        <Wrapper>
-          {images.length !== 0 && (
+        {images.length !== 0 && (
+          <Wrapper>
             <ImageGallery
               handleClickOnImage={this.handleClickOnImage}
               images={images}
             />
-          )}
 
-          {isLoader && <Loader />}
+            {isLoader && <Loader />}
 
-          {showModal && (
-            <Modal
-              largeImageURL={largeImageURL}
-              toggleModal={this.toggleModal}
-            />
-          )}
+            {showModal && (
+              <Modal
+                largeImageURL={largeImageURL}
+                toggleModal={this.toggleModal}
+              />
+            )}
 
-          {images.length !== 0 && (
             <Button title="LoadMore" handleLoadMoreBtn={this.loadMore} />
-          )}
 
-          {false && <Loader />}
-        </Wrapper>
+            {false && <Loader />}
+          </Wrapper>
+        )}
       </>
     );
   }
